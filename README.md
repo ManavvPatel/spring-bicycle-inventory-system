@@ -1,4 +1,20 @@
-Trent Bicycle Shop Management System
+🔗[Visit Live Application](http://trentbicycleshop.myddns.me)
+Login via :- 
+Username: Admin
+Password: admin123
+
+Username: Owner
+Password: owner123
+
+Username: Employee
+Password: employee123
+
+Role Access:
+Admins can create new users.
+Admin Cannot access Suppliers or Orders.
+Owner can access all resources.
+Empoyees cannot access Suppliers, Orders and User Accounts.
+Trent Bicycle Shop Management System: 
 
 A full-stack enterprise management solution designed to automate inventory tracking, supplier procurement, and retail sales operations. This system focuses on data integrity, system security, and cloud scalability.
 Technical Stack
