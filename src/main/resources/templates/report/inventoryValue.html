@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Overall Inventory Value</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+          background: #f7f9fc;
+          padding-top: 30px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4">Overall Inventory Value</h2>
+    <div class="alert alert-info">
+        Total Inventory Value: <strong th:text="${totalInventoryValue}">0.00</strong>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Current Stock</th>
+                <th>Unit Price</th>
+                <th>Total Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="dto : ${inventoryDTOs}">
+                <td th:text="${dto.productID}">1</td>
+                <td th:text="${dto.productName}">Product Name</td>
+                <td th:text="${dto.currentStock}">0</td>
+                <td th:text="${dto.unitPrice}">0.00</td>
+                <td th:text="${dto.totalValue}">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+</div>
+</body>
+</html>

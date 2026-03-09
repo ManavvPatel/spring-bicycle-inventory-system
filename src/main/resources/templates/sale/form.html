@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Record a Sale</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 30px;
+    }
+    .container { max-width: 800px; margin-top: 50px; }
+    .card {
+      padding: 20px; border-radius: 8px; background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 { color: #34495e; text-align: center; margin-bottom: 20px; }
+    .btn-custom { background-color: #5dade2; border-color: #3498db; color: #fff; }
+    .back-link { margin-top: 15px; display: block; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2 class="text-center">Record a Sale</h2>
+      <form th:action="@{/sales/save}" method="post" th:object="${sale}">
+        <div class="form-group">
+          <label for="customer">Customer:</label>
+          <select class="form-control" th:field="*{customer.customerID}" id="customer" required>
+            <option value="">--Select Customer--</option>
+            <option th:each="cust : ${customers}"
+                    th:value="${cust.customerID}"
+                    th:text="${cust.firstName + ' ' + cust.lastName}">
+            </option>
+          </select>
+        </div>
+        <h4 class="mt-4">Products Sold:</h4>
+        <div th:each="product : ${products}" class="form-group">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="productIds" th:value="${product.productID}" id="prodCheck__${product.productID}">
+            <label class="form-check-label" th:for="'prodCheck__' + ${product.productID}" th:text="${product.productName}"></label>
+          </div>
+          <input type="number" min="1" class="form-control mt-2" th:name="'quantities[' + ${product.productID} + ']'" placeholder="Enter quantity" style="max-width: 150px;">
+        </div>
+        <button type="submit" class="btn btn-custom btn-block">Submit Sale</button>
+      </form>
+      <a th:href="@{/sales}" class="btn btn-link back-link">Back to Sales List</a>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

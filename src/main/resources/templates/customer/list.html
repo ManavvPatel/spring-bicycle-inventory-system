@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer List</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 30px;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    .card {
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #34495e;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .btn-custom {
+      background-color: #5dade2;
+      border-color: #3498db;
+      color: #fff;
+    }
+    .btn-custom:hover {
+      background-color: #3498db;
+      border-color: #2980b9;
+    }
+    .back-link {
+      margin-top: 15px;
+      display: block;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2 class="mb-4 text-center">Customer List</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Customer ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="cust : ${customers}">
+            <td th:text="${cust.customerID}"></td>
+            <td th:text="${cust.firstName + ' ' + cust.lastName}"></td>
+            <td th:text="${cust.email}"></td>
+            <td th:text="${cust.phone}"></td>
+            <td>
+              <a th:href="@{'/customers/edit/' + ${cust.customerID}}" class="btn btn-sm btn-custom">Edit</a>
+              <a th:href="@{'/customers/delete/' + ${cust.customerID}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this customer?');">Delete</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-center">
+        <a th:href="@{/customers/add}" class="btn btn-primary">Add New Customer</a>
+      </div>
+      <div class="text-center mt-3">
+        <a th:href="@{/}" class="btn btn-link">Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Product - Inventory Report</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body { background: #f7f9fc; padding-top: 30px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Select a Product to View Inventory</h2>
+    <form th:action="@{/reports/inventoryByProduct}" method="post">
+        <div class="form-group">
+            <label for="productId">Product:</label>
+            <select class="form-control" id="productId" name="productId" required>
+                <option value="">--Select Product--</option>
+                <option th:each="product : ${products}" th:value="${product.productID}" th:text="${product.productName}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">View Inventory</button>
+    </form>
+    <br>
+    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+</div>
+</body>
+</html>

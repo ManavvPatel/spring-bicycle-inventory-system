@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory Details for [[${selectedProduct.productName}]]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body { background: #f7f9fc; padding-top: 30px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Inventory Details for <span th:text="${selectedProduct.productName}">Product Name</span></h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Current Stock</th>
+                <th>Last Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="inv : ${inventoryDetails}">
+                <td th:text="${inv.product.productID}"></td>
+                <td th:text="${inv.product.productName}"></td>
+                <td th:text="${inv.currentStock}"></td>
+                <td th:text="${inv.lastUpdate}">N/A</td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/reports/inventoryByProduct" class="btn btn-link">Back</a>
+    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+</div>
+</body>
+</html>

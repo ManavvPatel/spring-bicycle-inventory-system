@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Inventory</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 30px;
+    }
+    .container {
+      max-width: 600px;
+      margin-top: 50px;
+    }
+    .card {
+      padding: 20px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #34495e;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .btn-custom {
+      background-color: #5dade2;
+      border-color: #3498db;
+      color: #fff;
+    }
+    .back-link {
+      margin-top: 15px;
+      display: block;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Add Inventory</h2>
+      <form th:action="@{/inventory/save}" th:object="${inventory}" method="post">
+        <input type="hidden" th:field="*{inventoryID}" />
+        <div class="form-group">
+          <label for="product">Product:</label>
+          <select class="form-control" th:field="*{product}" required>
+            <option value="" disabled selected>Select Product</option>
+            <option th:each="product : ${products}" 
+                    th:value="${product}" 
+                    th:text="${product.productName}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="currentStock">Stock:</label>
+          <input type="number" class="form-control" th:field="*{currentStock}" id="currentStock" required />
+        </div>
+        <button type="submit" class="btn btn-custom btn-block">Save</button>
+      </form>
+      <a th:href="@{/inventory}" class="btn btn-link back-link">Back to Inventory</a>
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

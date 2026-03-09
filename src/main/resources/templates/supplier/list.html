@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Supplier List</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 30px;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    .card {
+      padding: 20px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #34495e;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .btn-custom {
+      background-color: #5dade2;
+      border-color: #3498db;
+      color: #fff;
+    }
+    .back-link {
+      margin-top: 15px;
+      display: block;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2 class="text-center mb-4">Supplier List</h2>
+      <div class="mb-3 text-center">
+        <a th:href="@{/suppliers/add}" class="btn btn-primary">Add New Supplier</a>
+      </div>
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Contact Rep</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="supplier : ${suppliers}">
+            <td th:text="${supplier.supplierName}">Supplier Name</td>
+            <td th:text="${supplier.contactRep}">Contact Rep</td>
+            <td th:text="${supplier.phone}">Phone</td>
+            <td th:text="${supplier.email}">Email</td>
+            <td>
+              <a th:href="@{'/suppliers/edit/' + ${supplier.supplierID}}" class="btn btn-sm btn-custom">Edit</a> |
+              <a th:href="@{'/suppliers/delete/' + ${supplier.supplierID}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this supplier?');">Delete</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-center">
+        <a th:href="@{/}" class="btn btn-link back-link">Back to Home</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

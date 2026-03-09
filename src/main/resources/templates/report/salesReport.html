@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${reportTitle}">Sales Report</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+          background: #f7f9fc;
+          padding-top: 30px;
+          font-family: 'Segoe UI', sans-serif;
+      }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4" th:text="${reportTitle}">Sales Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Sales ID</th>
+                <th>Customer</th>
+                <th>Sale Date</th>
+                <th>Total Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="sale : ${sales}">
+                <td th:text="${sale.salesID}"></td>
+                <td th:text="${sale.customer.firstName + ' ' + sale.customer.lastName}"></td>
+                <td th:text="${sale.saleDate}"></td>
+                <td th:text="${sale.totalAmount}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+</div>
+</body>
+</html>

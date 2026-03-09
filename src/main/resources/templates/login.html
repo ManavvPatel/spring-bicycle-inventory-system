@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Login - Bicycle Shop</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Soft, subtle background gradient */
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    /* Centering the login container and adding soft shadow */
+    .login-container {
+      margin-top: 100px;
+    }
+    .login-card {
+      padding: 30px;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    /* Styling the headings and labels */
+    .login-card h3 {
+      color: #34495e;
+      font-weight: 600;
+    }
+    .form-group label {
+      color: #2c3e50;
+      font-weight: 500;
+    }
+    /* Soft button styling */
+    .btn-primary {
+      background-color: #5dade2;
+      border-color: #3498db;
+      font-weight: 500;
+      padding: 10px 0;
+    }
+    .btn-primary:hover {
+      background-color: #3498db;
+      border-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container login-container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="login-card">
+          <h3 class="text-center mb-4">Customer Login</h3>
+          <form th:action="@{/login}" method="post">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

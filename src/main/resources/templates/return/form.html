@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Record a Return</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 30px;
+    }
+    .container { max-width: 600px; margin-top: 50px; }
+    .card {
+      padding: 20px; border-radius: 8px; background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 { color: #34495e; text-align: center; margin-bottom: 20px; }
+    .back-link { margin-top: 15px; display: block; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Record a Return</h2>
+      <form th:action="@{/returns/save}" method="post" th:object="${aReturn}">
+        <div class="form-group">
+          <label for="sale">Sale:</label>
+          <select class="form-control" th:field="*{sale.salesID}" id="sale" required>
+            <option value="">--Select Sale--</option>
+            <option th:each="sale : ${sales}"
+                    th:value="${sale.salesID}"
+                    th:text="${'Sale ' + sale.salesID + ' - ' + sale.customer.firstName + ' ' + sale.customer.lastName}">
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="product">Product Returned:</label>
+          <select class="form-control" th:field="*{product.productID}" id="product" required>
+            <option value="">--Select Product--</option>
+            <option th:each="product : ${products}"
+                    th:value="${product.productID}"
+                    th:text="${product.productName}"
+                    th:data-unitprice="${product.unitPrice}">
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="refundAmount">Refund Amount:</label>
+          <!-- This field will be auto-populated and set to readonly -->
+          <input type="number" step="0.01" class="form-control" th:field="*{refundAmount}" id="refundAmount" placeholder="Refund Amount" readonly required/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit Return</button>
+      </form>
+      <a th:href="@{/returns}" class="btn btn-link back-link">Back to Returns List</a>
+    </div>
+  </div>
+  
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // When the product dropdown changes, update the refund amount field with the product's unit price.
+    document.getElementById('product').addEventListener('change', function() {
+      var selectedOption = this.options[this.selectedIndex];
+      var unitPrice = selectedOption.getAttribute('data-unitprice');
+      // Set refund amount equal to unit price (you can modify if logic differs)
+      document.getElementById('refundAmount').value = unitPrice ? unitPrice : "";
+    });
+  </script>
+</body>
+</html>

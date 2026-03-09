@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${service.serviceID == null ? 'Add New Repair Service' : 'Edit Repair Service'}">Repair Service Form</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 30px;
+    }
+    .container { max-width: 600px; margin-top: 50px; }
+    .card {
+      padding: 20px; border-radius: 8px; background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 { color: #34495e; text-align: center; margin-bottom: 20px; }
+    .btn-custom { background-color: #5dade2; border-color: #3498db; color: #fff; }
+    .btn-custom:hover { background-color: #3498db; border-color: #2980b9; }
+    .back-link { margin-top: 15px; display: block; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2 th:text="${service.serviceID == null ? 'Add New Repair Service' : 'Edit Repair Service'}"></h2>
+      <form th:action="@{/repairServices/save}" th:object="${service}" method="post">
+        <input type="hidden" th:field="*{serviceID}" />
+        <div class="form-group">
+          <label for="serviceName">Service Name:</label>
+          <input type="text" class="form-control" th:field="*{serviceName}" id="serviceName" placeholder="Enter service name" required/>
+        </div>
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea class="form-control" th:field="*{description}" id="description" placeholder="Enter description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="cost">Cost:</label>
+          <input type="number" step="0.01" class="form-control" th:field="*{cost}" id="cost" placeholder="Enter cost" required/>
+        </div>
+        <button type="submit" class="btn btn-custom btn-block">Save Service</button>
+      </form>
+      <a th:href="@{/repairServices}" class="btn btn-link back-link">Back to Services List</a>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

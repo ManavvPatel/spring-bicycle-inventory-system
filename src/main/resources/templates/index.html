@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Trent Bicycle Shop</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .container {
+            margin-top: 40px;
+        }
+        .welcome-card {
+            padding: 30px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" th:href="@{/}">Trent Bicycle Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" 
+                data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" 
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <!-- Common for all authenticated users -->
+                <li class="nav-item"><a class="nav-link" th:href="@{/customers}">Customers</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/sales}">Sales</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/returns}">Returns</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/serviceTransactions}">Service Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/reports}">Reports</a></li>
+
+                <!-- Only OWNER can access suppliers -->
+                <li class="nav-item" sec:authorize="hasRole('OWNER')">
+                    <a class="nav-link" th:href="@{/suppliers}">Suppliers</a>
+                </li>
+
+                <!-- Only SUPPLIER role can access orders -->
+                <li class="nav-item" sec:authorize="hasRole('OWNER')">
+                    <a class="nav-link" th:href="@{/orders}">Orders</a>
+                </li>
+
+                <!-- Only ADMIN and OWNER for user account management -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','OWNER')">
+                    <a class="nav-link" th:href="@{/admin/users}">User Accounts</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-link">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="welcome-card">
+            <h1 class="text-center">Welcome to Trent Bicycle Shop</h1>
+            <p class="text-center">Shop Management System by Manav R Patel</p>
+            <p class="text-center">This is a simple web application to manage bicycle shop operations.</p>
+            <p class="text-center">Use the navigation bar to access different sections of the application.</p>
+            <p class="text-center">If you are not logged in, please <a href="#" th:href="@{/login}">login</a> to access the system.</p>
+            <p class="text-center">For any issues, please contact the administrator.</p>
+            <p class="text-center">Thank you for using our service!</p>
+            <p class="text-center">© 2025 Trent Bicycle Shop</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
