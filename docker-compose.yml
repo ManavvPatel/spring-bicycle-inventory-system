@@ -3,7 +3,7 @@ services:
     image: mysql:8.4
     environment:
       MYSQL_DATABASE: TrentBicycleShopDB
-      MYSQL_ROOT_PASSWORD: ManguMani456;.
+      MYSQL_ROOT_PASSWORD: YOUR_DB_PASSWORD
     ports:
       - "3307:3306"
     volumes:
@@ -24,7 +24,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/TrentBicycleShopDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ManguMani456;.
+      SPRING_DATASOURCE_PASSWORD: YOUR_DB_PASSWORD
 
 volumes:
   mysql_data:
