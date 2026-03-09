@@ -1,4 +1,5 @@
-🔗[Visit Live Application](http://trentbicycleshop.myddns.me)
+# 🔗[Visit the Live Application](http://trentbicycleshop.myddns.me)
+
 Login via :- 
 Username: Admin
 Password: admin123
@@ -14,7 +15,8 @@ Admins can create new users.
 Admin Cannot access Suppliers or Orders.
 Owner can access all resources.
 Empoyees cannot access Suppliers, Orders and User Accounts.
-Trent Bicycle Shop Management System: 
+
+## Trent Bicycle Shop Management System: 
 
 A full-stack enterprise management solution designed to automate inventory tracking, supplier procurement, and retail sales operations. This system focuses on data integrity, system security, and cloud scalability.
 Technical Stack
@@ -29,7 +31,7 @@ Technical Stack
 
     Build Tool: Maven
 
-System Architecture and Design
+### System Architecture and Design
 
 The application follows a decoupled architecture, separating the business logic from the managed cloud database to ensure high availability and performance even on resource-constrained hardware.
 1. Database Schema (ERD)
@@ -63,7 +65,7 @@ Key Features
 
     4. Repair Services Integration: Tracking module for service transactions, linking customers to specific repair types and assigned staff.
 
-Deployment and DevOps
+### Deployment and DevOps
 
 This project is fully containerized and deployed on a Google Cloud Platform (GCP) Compute Engine instance.
 
@@ -73,7 +75,7 @@ This project is fully containerized and deployed on a Google Cloud Platform (GCP
 
     Managed Database: Utilizes Aiven MySQL to offload database processing from the application server, providing automated backups and managed scaling.
 
-Local Setup
+### Local Setup
 
 To run this project locally, ensure you have Docker and Git installed on your machine.
 
@@ -96,22 +98,6 @@ To run this project locally, ensure you have Docker and Git installed on your ma
 
     Access the application at http://localhost:8080.
 
-Login via :- 
-Username: Admin
-Password: admin123
-
-Username: Owner
-Password: owner123
-
-Username: Employee
-Password: employee123
-
-Role Access:
-Admins can create new users.
-Admin Cannot access Suppliers or Orders.
-Owner can access all resources.
-Empoyees cannot access Suppliers, Orders and User Accounts.
-
-Documentation and References
+### Documentation and References
 
 The project structure includes a docs folder containing the original project report, detailed diagrams, and technical specifications used during the development phase.
