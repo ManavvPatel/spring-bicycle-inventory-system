@@ -80,6 +80,22 @@ To run this project locally, ensure you have Docker and Git installed on your ma
 
     Access the application at http://localhost:8080.
 
+Login via :- 
+Username: Admin
+Password: admin123
+
+Username: Owner
+Password: owner123
+
+Username: Employee
+Password: employee123
+
+Role Access:
+Admins can create new users.
+Admin Cannot access Suppliers or Orders.
+Owner can access all resources.
+Empoyees cannot access Suppliers, Orders and User Accounts.
+
 Documentation and References
 
 The project structure includes a docs folder containing the original project report, detailed diagrams, and technical specifications used during the development phase.
