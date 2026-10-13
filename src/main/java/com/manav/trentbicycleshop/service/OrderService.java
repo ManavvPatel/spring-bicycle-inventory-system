@@ -1,106 +1,109 @@
-// Project 2 - Part 2 : COSC4606 - 001
-//Student Name: Manav Patel
-//Student ID: 239466460
-
 package com.manav.trentbicycleshop.service;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.manav.trentbicycleshop.model.*;
 import com.manav.trentbicycleshop.repository.*;
-
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class OrderService {
+  private final OrderRepository orders;
+  private final OrderDetailRepository details;
+  private final StatusRepository statuses;
+  private final SupplierRepository suppliers;
+  private final StockService stock;
 
-    private final OrderRepository orderRepository;
-    private final OrderDetailRepository orderDetailRepository;
-    private final StatusRepository statusRepository;
-    private final InventoryRepository inventoryRepository;
+  public OrderService(
+      OrderRepository orders,
+      OrderDetailRepository details,
+      StatusRepository statuses,
+      SupplierRepository suppliers,
+      StockService stock) {
+    this.orders = orders;
+    this.details = details;
+    this.statuses = statuses;
+    this.suppliers = suppliers;
+    this.stock = stock;
+  }
 
-    public OrderService(OrderRepository orderRepository, OrderDetailRepository orderDetailRepository, StatusRepository statusRepository, InventoryRepository inventoryRepository) {
-        this.orderRepository = orderRepository;
-        this.orderDetailRepository = orderDetailRepository;
-        this.statusRepository = statusRepository;
-        this.inventoryRepository = inventoryRepository;
+  public List<Order> getAllOrders() {
+    return orders.findAll(org.springframework.data.domain.Sort.by("orderDate").descending());
+  }
+
+  public Order getOrder(Integer id) {
+    return orders.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found."));
+  }
+
+  public void saveOrder(Order order, List<OrderDetail> lines) {
+    if (order.getOrderID() != null)
+      throw new IllegalArgumentException("Existing orders cannot be overwritten.");
+    if (order.getSupplier() == null || order.getSupplier().getSupplierID() == null)
+      throw new IllegalArgumentException("Select a supplier.");
+    order.setSupplier(
+        suppliers
+            .lockById(order.getSupplier().getSupplierID())
+            .orElseThrow(() -> new IllegalArgumentException("Select an existing supplier.")));
+    if (lines == null || lines.isEmpty())
+      throw new IllegalArgumentException("Select at least one product and enter a quantity.");
+    Set<Integer> seen = new HashSet<>();
+    for (OrderDetail line : lines) {
+      if (line.getProduct() == null
+          || line.getProduct().getProductID() == null
+          || line.getQuantity() == null
+          || line.getQuantity() <= 0)
+        throw new IllegalArgumentException(
+            "Every selected product needs a positive whole-number quantity.");
+      if (!seen.add(line.getProduct().getProductID()))
+        throw new IllegalArgumentException("Select each product only once.");
     }
-
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    lines =
+        lines.stream().sorted(Comparator.comparing(l -> l.getProduct().getProductID())).toList();
+    for (OrderDetail line : lines)
+      line.setProduct(stock.lockProduct(line.getProduct().getProductID()));
+    Status shipped = statuses.findByStatusName("Shipped");
+    if (shipped == null)
+      throw new IllegalArgumentException("Order statuses have not been configured.");
+    order.setOrderDate(LocalDateTime.now());
+    order.setStatus(shipped);
+    Order saved = orders.save(order);
+    for (OrderDetail line : lines) {
+      line.setOrder(saved);
+      details.save(line);
     }
+  }
 
-    public Order getOrder(Integer id) {
-        return orderRepository.findById(id).orElse(null);
+  public void updateOrderStatus(Integer orderID, Integer statusID) {
+    Order order =
+        orders
+            .lockById(orderID)
+            .orElseThrow(() -> new IllegalArgumentException("Order not found."));
+    Status next =
+        statuses
+            .findById(statusID)
+            .orElseThrow(() -> new IllegalArgumentException("Status not found."));
+    String current = order.getStatus() == null ? "" : order.getStatus().getStatusName();
+    if (current.equals(next.getStatusName())) return;
+    if (!"Shipped".equals(current)
+        || !Set.of("Received", "Cancelled").contains(next.getStatusName()))
+      throw new IllegalArgumentException(
+          "Only shipped orders can be received or cancelled. Completed orders cannot be reopened.");
+    if ("Received".equals(next.getStatusName())) {
+      var lines =
+          details.findByOrderOrderID(orderID).stream()
+              .sorted(Comparator.comparing(l -> l.getProduct().getProductID()))
+              .toList();
+      if (lines.isEmpty())
+        throw new IllegalArgumentException("This order has no products to receive.");
+      for (OrderDetail line : lines) {
+        if (line.getQuantity() == null || line.getQuantity() <= 0)
+          throw new IllegalArgumentException("This order contains an invalid quantity.");
+        stock.change(line.getProduct(), line.getQuantity());
+      }
     }
-
-    public void saveOrder(Order order, List<OrderDetail> details) {
-        // Set default order date and status
-        order.setOrderDate(LocalDateTime.now());
-        Status shippedStatus = statusRepository.findByStatusName("Shipped");
-        order.setStatus(shippedStatus);
-        Order savedOrder = orderRepository.save(order);
-
-        for (OrderDetail detail : details) {
-            detail.setOrder(savedOrder);
-            orderDetailRepository.save(detail);
-        }
-    }
-
-    @Transactional
-    public void updateOrderStatus(Integer orderID, Integer newStatusID) {
-        Order order = orderRepository.findById(orderID).orElse(null);
-        if (order == null) {
-            System.out.println("Order with ID " + orderID + " not found.");
-            return;
-        }
-        
-        Status newStatus = statusRepository.findById(newStatusID).orElse(null);
-        if (newStatus == null) {
-            System.out.println("New status with ID " + newStatusID + " not found.");
-            return;
-        }
-        
-        String currentStatus = order.getStatus() != null ? order.getStatus().getStatusName() : null;
-        System.out.println("Updating Order ID " + orderID);
-        System.out.println("Current status: " + currentStatus);
-        System.out.println("Requested new status: " + newStatus.getStatusName());
-        
-        // Check if we are transitioning from "Shipped" to "Received"
-        if ("Shipped".equals(currentStatus) && "Received".equals(newStatus.getStatusName())) {
-            List<OrderDetail> details = orderDetailRepository.findByOrderOrderID(orderID);
-            System.out.println("Found " + details.size() + " order details for Order ID " + orderID);
-            for (OrderDetail detail : details) {
-                Product product = detail.getProduct();
-                System.out.println("Processing OrderDetail for Product ID " + product.getProductID() + " with quantity " + detail.getQuantity());
-                List<Inventory> invList = inventoryRepository.findAllByProduct(product);
-                Inventory inventory;
-                if (invList.isEmpty()) {
-                    System.out.println("No inventory record for Product ID " + product.getProductID() + ". Creating new record with stock " + detail.getQuantity());
-                    inventory = new Inventory();
-                    inventory.setProduct(product);
-                    inventory.setCurrentStock(detail.getQuantity());
-                } else {
-                    // If there are multiple records, sum them up (or choose first record)
-                    inventory = invList.get(0);
-                    int updatedStock = inventory.getCurrentStock() + detail.getQuantity();
-                    System.out.println("Existing inventory record found. Old stock: " + inventory.getCurrentStock() + ", adding: " + detail.getQuantity() + ", new stock: " + updatedStock);
-                    inventory.setCurrentStock(updatedStock);
-                }
-                inventory.setLastUpdate(LocalDateTime.now());
-                inventoryRepository.save(inventory);
-                System.out.println("Inventory updated for Product ID " + product.getProductID());
-            }
-        } else {
-            System.out.println("No inventory update needed. Transition not from 'Shipped' to 'Received'.");
-        }
-        
-        // Update the order status regardless
-        order.setStatus(newStatus);
-        orderRepository.save(order);
-        System.out.println("Order status updated for Order ID " + orderID + " to " + newStatus.getStatusName());
-    }
+    order.setStatus(next);
+    orders.save(order);
+  }
 }

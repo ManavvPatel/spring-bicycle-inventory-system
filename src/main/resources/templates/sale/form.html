@@ -1,54 +1,97 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Record a Sale</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    body {
-      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
-      font-family: 'Segoe UI', sans-serif;
-      padding-top: 30px;
-    }
-    .container { max-width: 800px; margin-top: 50px; }
-    .card {
-      padding: 20px; border-radius: 8px; background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h2 { color: #34495e; text-align: center; margin-bottom: 20px; }
-    .btn-custom { background-color: #5dade2; border-color: #3498db; color: #fff; }
-    .back-link { margin-top: 15px; display: block; text-align: center; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="card">
-      <h2 class="text-center">Record a Sale</h2>
-      <form th:action="@{/sales/save}" method="post" th:object="${sale}">
-        <div class="form-group">
-          <label for="customer">Customer:</label>
-          <select class="form-control" th:field="*{customer.customerID}" id="customer" required>
-            <option value="">--Select Customer--</option>
-            <option th:each="cust : ${customers}"
-                    th:value="${cust.customerID}"
-                    th:text="${cust.firstName + ' ' + cust.lastName}">
-            </option>
-          </select>
+<!doctype html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Record sale · Trent Bicycle Shop</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">SALES</p>
+          <h1>Record a sale</h1>
+          <p>Choose a customer and the products they are taking home.</p>
         </div>
-        <h4 class="mt-4">Products Sold:</h4>
-        <div th:each="product : ${products}" class="form-group">
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="productIds" th:value="${product.productID}" id="prodCheck__${product.productID}">
-            <label class="form-check-label" th:for="'prodCheck__' + ${product.productID}" th:text="${product.productName}"></label>
+      </div>
+      <section class="panel" style="max-width: 800px">
+        <form th:action="@{/sales/save}" method="post" th:object="${sale}">
+          <div class="form-group">
+            <label for="customer">Customer</label
+            ><select
+              class="form-control"
+              id="customer"
+              th:field="*{customer.customerID}"
+              required
+            >
+              <option value="">Choose a customer</option>
+              <option
+                th:each="item : ${customers}"
+                th:value="${item.customerID}"
+                th:text="${item.firstName + ' ' + item.lastName}"
+              ></option>
+            </select>
+            <p class="form-note">
+              Missing a customer?
+              <a th:href="@{/customers/add}">Add one first →</a>
+            </p>
           </div>
-          <input type="number" min="1" class="form-control mt-2" th:name="'quantities[' + ${product.productID} + ']'" placeholder="Enter quantity" style="max-width: 150px;">
-        </div>
-        <button type="submit" class="btn btn-custom btn-block">Submit Sale</button>
-      </form>
-      <a th:href="@{/sales}" class="btn btn-link back-link">Back to Sales List</a>
-    </div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+          <h3>Products</h3>
+          <p class="form-note">
+            Select each product and enter a whole-number quantity. Prices are
+            calculated from the product catalogue.
+          </p>
+          <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">
+            No products yet.
+            <a th:href="@{/products/add}">Create a product first.</a>
+          </div>
+          <div class="product-line" th:each="product : ${products}">
+            <div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="productIds"
+                  th:value="${product.productID}"
+                  th:id="${'product-' + product.productID}"
+                  th:checked="${selectedProducts != null and #lists.contains(selectedProducts,product.productID)}"
+                /><label
+                  th:for="${'product-' + product.productID}"
+                  th:text="${product.productName}"
+                ></label>
+              </div>
+              <small
+                th:text="${'CA$' + #numbers.formatDecimal(product.unitPrice,1,'COMMA',2,'POINT')}"
+              ></small>
+            </div>
+            <div>
+              <label th:for="${'quantity-' + product.productID}">Quantity</label
+              ><input
+                class="form-control"
+                type="number"
+                min="1"
+                max="2147483647"
+                step="1"
+                th:id="${'quantity-' + product.productID}"
+                th:name="${'quantities[' + product.productID + ']'}"
+                th:value="${quantities != null ? quantities['quantities[' + product.productID + ']'] : 1}"
+              />
+            </div>
+          </div>
+          <div class="actions mt-4">
+            <button class="btn btn-primary" type="submit">Complete sale</button
+            ><a class="btn btn-link" th:href="@{/sales}">Cancel</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
 </html>

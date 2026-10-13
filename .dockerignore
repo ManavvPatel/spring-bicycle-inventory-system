@@ -3,3 +3,7 @@ target
 .idea
 *.iml
 .DS_Store
+.env
+docs
+scripts
+node_modules

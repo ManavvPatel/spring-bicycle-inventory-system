@@ -1,28 +1,41 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
     <title>Select Product - Inventory Report</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-      body { background: #f7f9fc; padding-top: 30px; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h2>Select a Product to View Inventory</h2>
-    <form th:action="@{/reports/inventoryByProduct}" method="post">
-        <div class="form-group">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace form-page">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="container">
+        <h2>Select a Product to View Inventory</h2>
+        <form th:action="@{/reports/inventoryByProduct}" method="post">
+          <div class="form-group">
             <label for="productId">Product:</label>
-            <select class="form-control" id="productId" name="productId" required>
-                <option value="">--Select Product--</option>
-                <option th:each="product : ${products}" th:value="${product.productID}" th:text="${product.productName}"></option>
+            <select
+              class="form-control"
+              id="productId"
+              name="productId"
+              required
+            >
+              <option value="">--Select Product--</option>
+              <option
+                th:each="product : ${products}"
+                th:value="${product.productID}"
+                th:text="${product.productName}"
+              ></option>
             </select>
-        </div>
-        <button type="submit" class="btn btn-primary">View Inventory</button>
-    </form>
-    <br>
-    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
-</div>
-</body>
+          </div>
+          <button type="submit" class="btn btn-primary">View Inventory</button>
+        </form>
+        <br />
+        <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+      </div>
+    </main>
+  </body>
 </html>

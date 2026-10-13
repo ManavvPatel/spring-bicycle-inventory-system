@@ -1,44 +1,82 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
     <title>Overall Inventory Value</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-      body {
-          background: #f7f9fc;
-          padding-top: 30px;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h2 class="mb-4">Overall Inventory Value</h2>
-    <div class="alert alert-info">
-        Total Inventory Value: <strong th:text="${totalInventoryValue}">0.00</strong>
-    </div>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="container">
+        <h2 class="mb-4">Overall Inventory Value</h2>
+        <div class="alert alert-info">
+          Total Inventory Value:
+          <strong th:text="${totalInventoryValue}">0.00</strong>
+        </div>
+        <div class="toolbar">
+          <div class="table-search">
+            <label for="search-0">Search this table</label
+            ><input
+              id="search-0"
+              type="search"
+              class="form-control"
+              data-table-search="records-0"
+              placeholder="Search records…"
+            />
+          </div>
+          <span
+            class="table-count"
+            data-count-for="records-0"
+            aria-live="polite"
+          ></span>
+        </div>
+        <div class="table-wrap">
+          <table id="records-0" class="table table-bordered">
+            <thead>
+              <tr>
                 <th>Product ID</th>
                 <th>Product Name</th>
                 <th>Current Stock</th>
                 <th>Unit Price</th>
                 <th>Total Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="dto : ${inventoryDTOs}">
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-row th:each="dto : ${inventoryDTOs}">
                 <td th:text="${dto.productID}">1</td>
                 <td th:text="${dto.productName}">Product Name</td>
                 <td th:text="${dto.currentStock}">0</td>
-                <td th:text="${dto.unitPrice}">0.00</td>
-                <td th:text="${dto.totalValue}">0.00</td>
-            </tr>
-        </tbody>
-    </table>
-    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
-</div>
-</body>
+                <td
+                  th:text="${'CA$' + #numbers.formatDecimal(dto.unitPrice, 1, 'COMMA', 2, 'POINT')}"
+                >
+                  0.00
+                </td>
+                <td
+                  th:text="${'CA$' + #numbers.formatDecimal(dto.totalValue, 1, 'COMMA', 2, 'POINT')}"
+                >
+                  0.00
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(inventoryDTOs)}">
+                <td colspan="5" class="empty-state">
+                  <strong>No records yet</strong>Add a record to get started.
+                </td>
+              </tr>
+              <tr data-no-results hidden>
+                <td colspan="5" class="empty-state">
+                  No matching records. Try another search.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+      </div>
+    </main>
+  </body>
 </html>

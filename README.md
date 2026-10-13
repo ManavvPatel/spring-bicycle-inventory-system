@@ -1,103 +1,101 @@
-# 🔗[Visit the Live Application](http://trentbicycleshop.myddns.me)
+# Trent Bicycle Shop
 
-Login via :- 
-Username: Admin
-Password: admin123
+A Spring Boot application for managing a bicycle shop’s products, inventory, sales, purchasing, returns and repair services. Built by **Manav Patel** with Java 21, Spring Security, Spring Data JPA and Thymeleaf.
 
-Username: Owner
-Password: owner123
+![Shop overview](docs/screenshots/overview.png)
 
-Username: Employee
-Password: employee123
+## Run the local demo
 
-Role Access:
-Admins can create new users.
-Admin Cannot access Suppliers or Orders.
-Owner can access all resources.
-Empoyees cannot access Suppliers, Orders and User Accounts.
+Install **JDK 21**. Maven is downloaded by the included wrapper; no database installation is needed for the demo.
 
-## Trent Bicycle Shop Management System: 
+```bash
+git clone https://github.com/ManavvPatel/spring-bicycle-inventory-system.git
+cd spring-bicycle-inventory-system
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo
+```
 
-A full-stack enterprise management solution designed to automate inventory tracking, supplier procurement, and retail sales operations. This system focuses on data integrity, system security, and cloud scalability.
-Technical Stack
+Open **http://localhost:8080**. On Windows, use `mvnw.cmd` instead of `./mvnw`.
 
-    Backend: Java 21, Spring Boot 3, Spring Data JPA, Spring Security
+| Demo role | Username   | Password      |
+| --------- | ---------- | ------------- |
+| Owner     | `owner`    | `owner123`    |
+| Admin     | `admin`    | `admin123`    |
+| Employee  | `employee` | `employee123` |
 
-    Frontend: Thymeleaf, HTML5, CSS3, JavaScript
+Usernames are lowercase. These accounts are created **only in the `demo` profile**. The demo uses an isolated in-memory H2 database and resets on restart. Never use it for real shop records or connect it to a production database.
 
-    Database: MySQL 8.0 (Production: Aiven Managed Cloud)
+## What works
 
-    DevOps: Docker, Docker Compose, Google Cloud Platform (GCP)
+- **Shop overview:** live stock totals, low-stock alerts (five or fewer units), retail inventory value, daily gross sales and recent transactions.
+- **Product catalogue:** categories, prices, validation, editing and searchable tables.
+- **Sales:** server-calculated prices, positive quantities, stock availability checks and atomic inventory deductions. Product locks prevent simultaneous sales from overselling.
+- **Purchasing:** owner-only orders. Mark a shipment received to add stock exactly once; received and cancelled orders cannot be reopened.
+- **Returns:** one unit per return, checked against the original sale. Refunds use the recorded sale price; cumulative returns cannot exceed purchased units.
+- **Customer and service records:** customer directory, repair catalogue and service transactions.
+- **Reports:** inventory by product, retail inventory valuation, daily/weekly/monthly gross sales and weekly repairs.
+- **Consistent UI:** responsive navigation, keyboard focus states, local CSS/JavaScript, login feedback, form errors, readable dates and CAD amounts. No CDN is needed at runtime.
+- **Access control:** server-side permissions, matching role-aware navigation and CSRF-protected POST actions for deletion and logout.
 
-    Build Tool: Maven
+### Role access
 
-### System Architecture and Design
+| Area                                      | Employee | Admin | Owner |
+| ----------------------------------------- | -------- | ----- | ----- |
+| Dashboard, inventory, products, customers | Yes      | Yes   | Yes   |
+| Sales, returns, repair services, reports  | Yes      | Yes   | Yes   |
+| Suppliers and purchase orders             | No       | No    | Yes   |
+| User accounts                             | No       | Yes   | Yes   |
 
-The application follows a decoupled architecture, separating the business logic from the managed cloud database to ensure high availability and performance even on resource-constrained hardware.
-1. Database Schema (ERD)
+Admins cannot create Owner accounts. Owner accounts and the currently signed-in account cannot be deleted through the UI. New account passwords must contain at least 12 characters.
 
-The backend is supported by a complex relational schema featuring over 14 entities. This design ensures strict data normalization and referential integrity across sales and inventory modules.
+## Persistent local setup with MySQL
 
-<img width="1023" height="724" alt="image" src="https://github.com/user-attachments/assets/17267a17-5fb0-44c4-a292-710c7263405d" />
+Requires Docker with Compose. Create your local environment file and replace all example passwords:
 
+```bash
+cp .env.example .env
+docker compose up --build
+```
 
-Key Entities:
+Open http://localhost:8080 and sign in with `BOOTSTRAP_USERNAME` and `BOOTSTRAP_PASSWORD` from `.env`. The initial Owner is created only when the user table is empty; changing the environment later does not reset existing passwords. Categories and order statuses are seeded on startup if missing.
 
-    Core: Products, Inventory, Suppliers
+MySQL data persists in the `mysql_data` volume. The database port is not exposed, and the app binds to the local machine. Compose uses `ddl-auto=update` to initialize a development database; use reviewed migrations for production. The Docker build runs the test suite.
 
-    Transactions: Orders, Sales, Returns
+For an existing external MySQL database, set `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` and `SPRING_DATASOURCE_PASSWORD`. The default schema mode is `validate`, so it will not silently change an existing schema. On a new **development-only** database, use `DDL_AUTO=update` for initialization. Set the application/container timezone to your store’s timezone so daily reports match its business day.
 
-    Users: Customers, Employees (Role-Based Access Control)
+## Run tests and package
 
-2. Frontend and User Experience
+```bash
+./mvnw verify
+java -jar target/bicycleshop-0.0.1-SNAPSHOT.jar --spring.profiles.active=demo
+```
 
-The user interface is built for efficiency, providing store managers and staff with a real-time overview of stock levels, financial transactions, and repair service statuses.
+The integration suite starts the complete Spring application against a disposable H2 database. It checks authentication, role visibility, protected routes, CSRF requirements, form validation, all main page templates, sale totals, stock rollback, concurrent sale protection, order receipt and return rules. GitHub Actions runs `verify` on Java 21 for pushes and pull requests.
 
-<img width="1247" height="453" alt="image" src="https://github.com/user-attachments/assets/91ab6781-448d-40df-a7c7-2fb7f25cebac" />
+Browser smoke checks are available in `scripts/browser-smoke.cjs`. They require Playwright and an installed Chromium browser, and should **only** run against a fresh demo instance: they create a sale, order, return and service record. See the script header for usage.
 
-Key Features
+## Project structure
 
-    1. Role-Based Access Control (RBAC): Secured endpoints using Spring Security to manage permissions between Admin and Staff roles, ensuring sensitive data is only accessible to authorized users.
+```text
+src/main/java/com/manav/trentbicycleshop/
+  config/       Security and profile-specific initialization
+  controller/   Thymeleaf routes, binding, validation and error handling
+  model/        JPA entities
+  repository/   Database queries and transaction locks
+  service/      Sales, stock, orders, returns and other shop operations
+src/main/resources/
+  static/       Shared local CSS and JavaScript
+  templates/    Shared layout and module screens
+src/test/       Application integration tests
+```
 
-    2. Automated Inventory Tracking: Real-time monitoring of stock levels with automated status updates for products requiring restocking.
+The original academic report is [included in the repository](Manav_Patel_Project2_Part2_Report.pdf). The SQL file under `src/main/resources/db_setup_queries/mysql` is historical reference material, not a migration to run against an existing database.
 
-    3. Supplier Management: Integrated procurement workflow to manage external supplier contact information and purchase order history.
+## Deployment notes and current limits
 
-    4. Repair Services Integration: Tracking module for service transactions, linking customers to specific repair types and assigned staff.
-
-### Deployment and DevOps
-
-This project is fully containerized and deployed on a Google Cloud Platform (GCP) Compute Engine instance.
-
-    Containerization: Multi-stage Docker builds are utilized to minimize final image size and reduce the attack surface for improved security.
-
-    Orchestration: Docker Compose manages the application environment, network bridging, and container lifecycles.
-
-    Managed Database: Utilizes Aiven MySQL to offload database processing from the application server, providing automated backups and managed scaling.
-
-### Local Setup
-
-To run this project locally, ensure you have Docker and Git installed on your machine.
-
-    Clone the repository:
-    Bash
-
-    git clone https://github.com/ManavvPatel/spring-bicycle-inventory-system.git
-
-    Navigate to the project directory:
-    Bash
-
-    cd spring-bicycle-inventory-system
-
-    Configure your database credentials in the docker-compose.yml file.
-
-    Launch the application using the Maven Wrapper and Docker:
-    Bash
-
-    docker compose up --build
-
-    Access the application at http://localhost:8080.
-
-### Documentation and References
-
-The project structure includes a docs folder containing the original project report, detailed diagrams, and technical specifications used during the development phase.
+- Previously committed database credentials and publicly shared account passwords must be rotated before using an existing deployment. Removing them from the current files does not remove them from Git history or an existing database.
+- Back up an existing database before updating. Legacy duplicate inventory rows are rejected during stock mutations so that they can be reconciled deliberately.
+- `cloudrun` now expects an external MySQL database and uses secure cookies behind HTTPS. Use the explicit `demo` profile for a disposable demo; no profile seeds public demo credentials automatically.
+- Returns are one unit per record and assume the returned unit can be restocked. Taxes, payment processing, damaged-stock handling and a full audit log are not implemented.
+- Inventory value is **retail selling value**, not accounting cost. Sales reports show gross sales, not net revenue after refunds. Repair history currently reads the service’s catalogue price rather than an immutable historical price.
+- Tables filter the records loaded on the page. Large catalogues should add database pagination and search.
+- H2 tests do not replace testing against the deployment’s MySQL instance. Verify database compatibility and take backups before deploying.

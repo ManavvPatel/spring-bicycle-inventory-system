@@ -1,36 +1,76 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
     <title>Inventory Details for [[${selectedProduct.productName}]]</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-      body { background: #f7f9fc; padding-top: 30px; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h2>Inventory Details for <span th:text="${selectedProduct.productName}">Product Name</span></h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="container">
+        <h2>
+          Inventory Details for
+          <span th:text="${selectedProduct.productName}">Product Name</span>
+        </h2>
+        <div class="toolbar">
+          <div class="table-search">
+            <label for="search-0">Search this table</label
+            ><input
+              id="search-0"
+              type="search"
+              class="form-control"
+              data-table-search="records-0"
+              placeholder="Search records…"
+            />
+          </div>
+          <span
+            class="table-count"
+            data-count-for="records-0"
+            aria-live="polite"
+          ></span>
+        </div>
+        <div class="table-wrap">
+          <table id="records-0" class="table table-bordered">
+            <thead>
+              <tr>
                 <th>Product ID</th>
                 <th>Product Name</th>
                 <th>Current Stock</th>
                 <th>Last Update</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="inv : ${inventoryDetails}">
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-row th:each="inv : ${inventoryDetails}">
                 <td th:text="${inv.product.productID}"></td>
                 <td th:text="${inv.product.productName}"></td>
                 <td th:text="${inv.currentStock}"></td>
-                <td th:text="${inv.lastUpdate}">N/A</td>
-            </tr>
-        </tbody>
-    </table>
-    <a href="/reports/inventoryByProduct" class="btn btn-link">Back</a>
-    <a href="/reports" class="btn btn-link">Back to Reports Home</a>
-</div>
-</body>
+                <td
+                  th:text="${inv.lastUpdate != null ? #temporals.format(inv.lastUpdate, 'MMM d, yyyy · HH:mm') : '—'}"
+                >
+                  N/A
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(inventoryDetails)}">
+                <td colspan="4" class="empty-state">
+                  <strong>No records yet</strong>Add a record to get started.
+                </td>
+              </tr>
+              <tr data-no-results hidden>
+                <td colspan="4" class="empty-state">
+                  No matching records. Try another search.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <a href="/reports/inventoryByProduct" class="btn btn-link">Back</a>
+        <a href="/reports" class="btn btn-link">Back to Reports Home</a>
+      </div>
+    </main>
+  </body>
 </html>

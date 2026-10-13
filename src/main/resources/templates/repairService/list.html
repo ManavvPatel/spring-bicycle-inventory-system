@@ -1,61 +1,97 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Repair Services List</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    body {
-      background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
-      font-family: 'Segoe UI', sans-serif;
-      padding-top: 30px;
-    }
-    .container { margin-top: 50px; }
-    .card {
-      padding: 20px; border-radius: 8px; background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h2 { color: #34495e; text-align: center; margin-bottom: 20px; }
-    .btn-custom { background-color: #5dade2; border-color: #3498db; color: #fff; }
-    .back-link { margin-top: 15px; display: block; text-align: center; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="card">
-      <h2 class="mb-4 text-center">Repair Services</h2>
-      <div class="text-center mb-3">
-        <a th:href="@{/repairServices/add}" class="btn btn-primary">Add New Repair Service</a>
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Repair Services List</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="container">
+        <div class="card">
+          <h2 class="mb-4 text-center">Repair Services</h2>
+          <div class="text-center mb-3">
+            <a th:href="@{/repairServices/add}" class="btn btn-primary"
+              >Add New Repair Service</a
+            >
+          </div>
+          <div class="toolbar">
+            <div class="table-search">
+              <label for="search-0">Search this table</label
+              ><input
+                id="search-0"
+                type="search"
+                class="form-control"
+                data-table-search="records-0"
+                placeholder="Search records…"
+              />
+            </div>
+            <span
+              class="table-count"
+              data-count-for="records-0"
+              aria-live="polite"
+            ></span>
+          </div>
+          <div class="table-wrap">
+            <table id="records-0" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Service ID</th>
+                  <th>Service Name</th>
+                  <th>Description</th>
+                  <th>Cost</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-row th:each="service : ${services}">
+                  <td th:text="${service.serviceID}"></td>
+                  <td th:text="${service.serviceName}"></td>
+                  <td th:text="${service.description}"></td>
+                  <td
+                    th:text="${'CA$' + #numbers.formatDecimal(service.cost, 1, 'COMMA', 2, 'POINT')}"
+                  ></td>
+                  <td>
+                    <a
+                      th:href="@{'/repairServices/edit/' + ${service.serviceID}}"
+                      class="btn btn-sm btn-custom"
+                      >Edit</a
+                    >
+                    <form
+                      th:action="@{'/repairServices/delete/' + ${service.serviceID}}"
+                      method="post"
+                      class="inline-form"
+                      data-confirm="Delete this record? Linked records cannot be deleted."
+                    >
+                      <button type="submit" class="btn btn-sm btn-danger">
+                        Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(services)}">
+                  <td colspan="5" class="empty-state">
+                    <strong>No records yet</strong>Add a record to get started.
+                  </td>
+                </tr>
+                <tr data-no-results hidden>
+                  <td colspan="5" class="empty-state">
+                    No matching records. Try another search.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center">
+            <a th:href="@{/}" class="btn btn-link back-link">Back to Home</a>
+          </div>
+        </div>
       </div>
-      <table class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th>Service ID</th>
-            <th>Service Name</th>
-            <th>Description</th>
-            <th>Cost</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="service : ${services}">
-            <td th:text="${service.serviceID}"></td>
-            <td th:text="${service.serviceName}"></td>
-            <td th:text="${service.description}"></td>
-            <td th:text="${service.cost}"></td>
-            <td>
-              <a th:href="@{'/repairServices/edit/' + ${service.serviceID}}" class="btn btn-sm btn-custom">Edit</a>
-              <a th:href="@{'/repairServices/delete/' + ${service.serviceID}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this service?');">Delete</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="text-center">
-        <a th:href="@{/}" class="btn btn-link back-link">Back to Home</a>
-      </div>
-    </div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    </main>
+  </body>
 </html>
