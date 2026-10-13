@@ -1,0 +1,149 @@
+<!doctype html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <body>
+    <div th:fragment="shell">
+      <a class="skip-link" href="#main-content">Skip to content</a>
+      <aside class="sidebar" id="navigation">
+        <a class="brand" th:href="@{/home}"
+          ><span class="brand-mark" aria-hidden="true">t.</span
+          ><span>TRENT<small>BICYCLE SHOP</small></span></a
+        >
+        <p class="nav-label">WORKSPACE</p>
+        <nav aria-label="Main navigation">
+          <a
+            th:href="@{/home}"
+            th:classappend="${currentPath == '/' or currentPath == '/home'} ? 'active'"
+            th:attr="aria-current=${currentPath == '/' or currentPath == '/home'} ? 'page' : null"
+            ><span aria-hidden="true">◈</span>Overview</a
+          >
+          <a
+            th:href="@{/inventory}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/inventory')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/inventory')} ? 'page' : null"
+            ><span aria-hidden="true">▦</span>Inventory</a
+          >
+          <a
+            th:href="@{/products}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/products')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/products')} ? 'page' : null"
+            ><span aria-hidden="true">◇</span>Products</a
+          >
+          <a
+            th:href="@{/customers}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/customers')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/customers')} ? 'page' : null"
+            ><span aria-hidden="true">◎</span>Customers</a
+          >
+          <a
+            th:href="@{/sales}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/sales')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/sales')} ? 'page' : null"
+            ><span aria-hidden="true">↗</span>Sales</a
+          >
+          <a
+            th:href="@{/returns}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/returns')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/returns')} ? 'page' : null"
+            ><span aria-hidden="true">↩</span>Returns</a
+          >
+          <a
+            th:href="@{/serviceTransactions}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/serviceTransactions')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/serviceTransactions')} ? 'page' : null"
+            ><span aria-hidden="true">⊞</span>Service desk</a
+          >
+          <a
+            th:href="@{/repairServices}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/repairServices')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/repairServices')} ? 'page' : null"
+            ><span aria-hidden="true">⚒</span>Repair services</a
+          >
+          <a
+            th:href="@{/reports}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/reports')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/reports')} ? 'page' : null"
+            ><span aria-hidden="true">▤</span>Reports</a
+          >
+          <a
+            th:href="@{/suppliers}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/suppliers')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/suppliers')} ? 'page' : null"
+            sec:authorize="hasRole('Owner')"
+            ><span aria-hidden="true">▱</span>Suppliers</a
+          >
+          <a
+            th:href="@{/orders}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/orders')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/orders')} ? 'page' : null"
+            sec:authorize="hasRole('Owner')"
+            ><span aria-hidden="true">□</span>Purchase orders</a
+          >
+          <a
+            th:href="@{/admin/users}"
+            th:classappend="${#strings.startsWith(currentPath ?: '', '/admin/users')} ? 'active'"
+            th:attr="aria-current=${#strings.startsWith(currentPath ?: '', '/admin/users')} ? 'page' : null"
+            sec:authorize="hasAnyRole('Admin','Owner')"
+            ><span aria-hidden="true">⚙</span>User accounts</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <span class="avatar" aria-hidden="true">T</span>
+          <div>
+            <strong sec:authentication="name">Team member</strong
+            ><small>Shop workspace</small>
+          </div>
+          <form th:action="@{/logout}" method="post">
+            <button
+              class="logout"
+              type="submit"
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              ↪
+            </button>
+          </form>
+        </div>
+      </aside>
+      <header class="topbar">
+        <button
+          type="button"
+          class="menu-toggle"
+          aria-controls="navigation"
+          aria-expanded="false"
+        >
+          ☰ <span>Menu</span></button
+        ><span class="breadcrumb"
+          >Trent Bicycle Shop <span>/</span> Operations</span
+        ><span class="topbar-note"
+          ><span class="status-dot"></span>
+          <span
+            th:text="${demoMode == true ? 'Demo workspace' : 'Shop workspace'}"
+            >Shop workspace</span
+          ></span
+        >
+      </header>
+    </div>
+    <div th:fragment="notices">
+      <div th:if="${demoMode}" class="demo-banner">
+        <strong>Demo workspace</strong
+        ><span>Sample data resets when the application restarts.</span>
+      </div>
+      <div
+        th:if="${success}"
+        class="alert alert-success"
+        role="status"
+        th:text="${success}"
+      ></div>
+      <div
+        th:if="${errorMessage}"
+        class="alert alert-danger"
+        role="alert"
+        th:text="${errorMessage}"
+      ></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Review your request · Trent Bicycle Shop</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace">
+      <section class="panel error-panel">
+        <p class="eyebrow">LET'S GET YOU BACK ON TRACK</p>
+        <h1 th:text="${errorTitle ?: 'This page is unavailable'}">
+          This page is unavailable
+        </h1>
+        <p
+          th:text="${errorMessage ?: 'The page may not exist, or your role may not have access. Return to your workspace to continue.'}"
+        ></p>
+        <div class="actions">
+          <button class="btn" type="button" data-go-back>Go back</button
+          ><a class="btn btn-primary" th:href="@{/home}">Back to overview</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

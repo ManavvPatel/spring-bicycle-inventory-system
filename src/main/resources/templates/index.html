@@ -1,90 +1,178 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Home - Trent Bicycle Shop</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #f7f9fc, #e2e9f1);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .navbar {
-            margin-bottom: 20px;
-        }
-        .container {
-            margin-top: 40px;
-        }
-        .welcome-card {
-            padding: 30px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" th:href="@{/}">Trent Bicycle Shop</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" 
-                data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" 
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <!-- Common for all authenticated users -->
-                <li class="nav-item"><a class="nav-link" th:href="@{/customers}">Customers</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/sales}">Sales</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/returns}">Returns</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/serviceTransactions}">Service Transactions</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/reports}">Reports</a></li>
-
-                <!-- Only OWNER can access suppliers -->
-                <li class="nav-item" sec:authorize="hasRole('OWNER')">
-                    <a class="nav-link" th:href="@{/suppliers}">Suppliers</a>
-                </li>
-
-                <!-- Only SUPPLIER role can access orders -->
-                <li class="nav-item" sec:authorize="hasRole('OWNER')">
-                    <a class="nav-link" th:href="@{/orders}">Orders</a>
-                </li>
-
-                <!-- Only ADMIN and OWNER for user account management -->
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','OWNER')">
-                    <a class="nav-link" th:href="@{/admin/users}">User Accounts</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <form th:action="@{/logout}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-link">Logout</button>
-                    </form>
-                </li>
-            </ul>
+<!doctype html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Overview · Trent Bicycle Shop</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">YOUR SHOP, AT A GLANCE</p>
+          <h1>Shop overview</h1>
+          <p>A clear view of your inventory and daily operations.</p>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container">
-        <div class="welcome-card">
-            <h1 class="text-center">Welcome to Trent Bicycle Shop</h1>
-            <p class="text-center">Shop Management System by Manav R Patel</p>
-            <p class="text-center">This is a simple web application to manage bicycle shop operations.</p>
-            <p class="text-center">Use the navigation bar to access different sections of the application.</p>
-            <p class="text-center">If you are not logged in, please <a href="#" th:href="@{/login}">login</a> to access the system.</p>
-            <p class="text-center">For any issues, please contact the administrator.</p>
-            <p class="text-center">Thank you for using our service!</p>
-            <p class="text-center">© 2025 Trent Bicycle Shop</p>
+        <div class="actions">
+          <a class="btn" th:href="@{/products/add}">+ Add product</a
+          ><a class="btn btn-primary" th:href="@{/sales/add}">↗ Record sale</a>
         </div>
-    </div>
-
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+      </div>
+      <section class="metrics" aria-label="Shop metrics">
+        <div class="metric">
+          <div class="metric-label">
+            <span>Today's sales</span><span aria-hidden="true">↗</span>
+          </div>
+          <div
+            class="metric-value"
+            th:text="${'CA$' + #numbers.formatDecimal(todayRevenue,1,'COMMA',2,'POINT')}"
+          ></div>
+          <div
+            class="metric-foot"
+            th:text="${todaySalesCount + ' transactions today · gross sales'}"
+          ></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">
+            <span>Stock on hand</span><span aria-hidden="true">▦</span>
+          </div>
+          <div class="metric-value" th:text="${stockCount}"></div>
+          <div
+            class="metric-foot"
+            th:text="${'Units across ' + productCount + ' products'}"
+          ></div>
+        </div>
+        <div class="metric attention">
+          <div class="metric-label">
+            <span>Needs attention</span><span aria-hidden="true">◷</span>
+          </div>
+          <div class="metric-value" th:text="${#lists.size(lowStock)}"></div>
+          <div class="metric-foot">Products with 5 or fewer units</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">
+            <span>Inventory retail value</span><span aria-hidden="true">◇</span>
+          </div>
+          <div
+            class="metric-value"
+            th:text="${'CA$' + #numbers.formatDecimal(inventoryValue,1,'COMMA',2,'POINT')}"
+          ></div>
+          <div class="metric-foot">At current selling prices</div>
+        </div>
+      </section>
+      <div class="dashboard-grid">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Stock watch</h3>
+              <p>Keep your best rides ready to roll.</p>
+            </div>
+            <a th:href="@{/inventory}">All inventory ↗</a>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>On hand</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="inv : ${lowStock}">
+                  <td th:text="${inv.product.productName}"></td>
+                  <td class="number" th:text="${inv.currentStock ?: 0}"></td>
+                  <td>
+                    <span
+                      class="badge"
+                      th:classappend="${inv.currentStock == null or inv.currentStock == 0} ? 'danger' : 'warning'"
+                      th:text="${inv.currentStock == null or inv.currentStock == 0} ? 'Out of stock' : 'Low stock'"
+                    ></span>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(lowStock)}">
+                  <td colspan="3" class="empty-state">
+                    <strong>Stock is looking good</strong>No products are below
+                    the stock threshold.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span>Low stock threshold: 5 units</span
+            ><a sec:authorize="hasRole('Owner')" th:href="@{/orders/add}"
+              >Create purchase order →</a
+            >
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Recent sales</h3>
+              <p>Your latest customer transactions.</p>
+            </div>
+            <a th:href="@{/sales}">View all ↗</a>
+          </div>
+          <div class="table-wrap" th:if="${!#lists.isEmpty(recentSales)}">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="sale : ${recentSales}">
+                  <td
+                    th:text="${sale.customer.firstName + ' ' + sale.customer.lastName}"
+                  ></td>
+                  <td
+                    th:text="${#temporals.format(sale.saleDate,'MMM d')}"
+                  ></td>
+                  <td
+                    class="number"
+                    th:text="${'CA$' + #numbers.formatDecimal(sale.totalAmount,1,'COMMA',2,'POINT')}"
+                  ></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" th:if="${#lists.isEmpty(recentSales)}">
+            <strong>Your next sale starts here</strong>
+            <p>
+              Record a sale to track revenue and update stock automatically.
+            </p>
+            <a class="btn" th:href="@{/sales/add}">Record your first sale →</a>
+          </div>
+          <div class="table-footer">
+            <span
+              th:text="${customerCount + ' customers in your directory'}"
+            ></span
+            ><a th:href="@{/customers}">Customer directory →</a>
+          </div>
+        </section>
+      </div>
+      <section class="callout">
+        <div>
+          <p class="eyebrow">FROM WORKBENCH TO ROAD</p>
+          <h3>Keep every service moving.</h3>
+          <p>
+            Connect customers with repair services and keep a clear record of
+            the work your shop delivers.
+          </p>
+        </div>
+        <a class="btn" th:href="@{/serviceTransactions}">Open service desk →</a>
+      </section>
+    </main>
+  </body>
 </html>

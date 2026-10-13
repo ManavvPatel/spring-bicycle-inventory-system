@@ -1,34 +1,73 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
     <title>Add New User</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container mt-4">
-    <h2 th:text="${user.userID == null ? 'Add New User' : 'Edit User'}"></h2>
-    <form th:action="@{/admin/users/save}" th:object="${user}" method="post">
-        <div class="form-group">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <script defer th:src="@{/js/app.js}"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: shell}"></div>
+    <main id="main-content" class="workspace form-page">
+      <div th:replace="~{fragments/layout :: notices}"></div>
+      <div class="container mt-4">
+        <h2
+          th:text="${user.userID == null ? 'Add New User' : 'Edit User'}"
+        ></h2>
+        <form
+          th:action="@{/admin/users/save}"
+          th:object="${user}"
+          method="post"
+        >
+          <div
+            th:if="${#fields.hasAnyErrors()}"
+            class="alert alert-danger"
+            role="alert"
+          >
+            <p>Please correct the fields below.</p>
+            <ul>
+              <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+            </ul>
+          </div>
+          <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" th:field="*{username}" class="form-control" id="username" placeholder="Enter username" required/>
-        </div>
-        <div class="form-group">
+            <input
+              type="text"
+              th:field="*{username}"
+              class="form-control"
+              id="username"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+          <div class="form-group">
             <label for="hashedPassword">Password</label>
-            <input type="password" th:field="*{hashedPassword}" class="form-control" id="hashedPassword" placeholder="Enter password" required/>
-        </div>
-        <div class="form-group">
+            <input
+              type="password"
+              minlength="12"
+              autocomplete="new-password"
+              th:field="*{hashedPassword}"
+              class="form-control"
+              id="hashedPassword"
+              placeholder="Enter password"
+              required
+            />
+          </div>
+          <div class="form-group">
             <label for="role">Role</label>
             <select th:field="*{role}" class="form-control" id="role" required>
-                <option value="Admin">Admin</option>
-                <option value="Owner">Owner</option>
-                <option value="Employee">Employee</option>
+              <option value="Admin">Admin</option>
+              <option value="Owner">Owner</option>
+              <option value="Employee">Employee</option>
             </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Save User</button>
-    </form>
-    <br>
-    <a href="/admin/users" class="btn btn-link">Back to User List</a>
-</div>
-</body>
+          </div>
+          <button type="submit" class="btn btn-primary">Save User</button>
+        </form>
+        <br />
+        <a href="/admin/users" class="btn btn-link">Back to User List</a>
+      </div>
+    </main>
+  </body>
 </html>
